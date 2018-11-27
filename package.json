@@ -1,6 +1,6 @@
 {
   "name": "@hagnerd/react-rp",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A simple utility function to make composing render-props easier, with a foward facing API that already supports React Hooks.",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
