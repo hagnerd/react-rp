@@ -6,11 +6,19 @@
   "module": "dist/bundle.esm.js",
   "license": "MIT",
   "devDependencies": {
+    "husky": "^1.2.0",
     "jest": "^23.6.0",
     "rollup": "^0.67.3"
   },
   "scripts": {
     "build": "rollup -c",
-    "test": "jest --watchAll"
+    "test:watch": "jest --watchAll",
+    "test": "jest"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test",
+      "pre-push": "npm test"
+    }
   }
 }
