@@ -16,7 +16,7 @@
     "test": "jest"
   },
   "husky": {
-    "hoosk": {
+    "hooks": {
       "pre-commit": "npm test",
       "pre-push": "npm test"
     }
