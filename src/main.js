@@ -1,19 +1,22 @@
-function renderProps(
-  fns,
-  props,
-  {
-    fnPicker = selections =>
-      Array.isArray(selections)
-        ? selections.find(item => typeof item === 'function')
-        : selections,
-    renderFn = fnPicker(fns),
-    onFailure = () => {
-      console.error('Failed to use component properly');
-      return null;
-    },
-  } = {},
-) {
-  return renderFn ? renderFn(props) : onFailure();
+function noFunctionError() {
+  throw new TypeError('none of the supported render props are functions');
 }
+
+const isFunction = a => typeof a === 'function';
+
+const renderProps = (
+  functionOrFunctions = noFunctionError,
+  props,
+  failure = noFunctionError,
+  {
+    fnPicker = fnOrFns =>
+      Array.isArray(fnOrFns)
+        ? fnOrFns.find(isFunction)
+        : isFunction(fnOrFns)
+        ? fnOrFns
+        : undefined,
+    renderFn = fnPicker(functionOrFunctions),
+  } = {},
+) => (renderFn ? renderFn(props) : failure());
 
 module.exports = renderProps;
