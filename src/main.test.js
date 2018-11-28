@@ -1,100 +1,122 @@
 const rp = require('./main');
 
-const noop = () => {};
+/* custom error handler for tests */
+function handleError(msg) {
+  throw new Error(msg);
+}
+
+const argList = [
+  'string',
+  1,
+  ['string', 1],
+  { id: '1', description: 'test' },
+  () => {},
+];
+
+const rndm = () => Math.floor(Math.random() * argList.length);
 
 // TODO: refactor / cleanup tests
 
 test('it should work with a single function as input', () => {
+  // arrange
   const spy = jest.fn();
-  rp(spy, 'hello');
+  const randomArg = arguments[rndm()];
 
+  // act
+  rp(spy, randomArg);
+
+  // assert
   expect(spy).toHaveBeenCalledTimes(1);
-  expect(spy).toHaveBeenCalledWith('hello');
+  expect(spy).toHaveBeenCalledWith(randomArg);
 });
 
 test('it should fail if the only render prop is not a function', () => {
-  const spy = 'fail';
+  // arrange
+  const err = 'test error';
 
-  function handleError() {
-    throw new Error('test error');
-  }
+  // act
+  const wrapper = () => rp('blah', 'ha', handleError(err));
 
-  expect(() => {
-    rp(spy, 'ha');
-  }).toThrow();
-
-  expect(() => {
-    rp(spy, 'ha', handleError);
-  }).toThrow(/^test error$/);
+  // assert
+  expect(wrapper).toThrow();
+  expect(wrapper).toThrow(err);
 });
 
 test('it should work with an array of functions as input', () => {
+  // arrange
   const spy1 = jest.fn();
   const spy2 = jest.fn();
+  const randomArg = argList[rndm()];
 
-  rp([spy1, spy2], 'hello');
+  // act
+  rp([spy1, spy2], randomArg);
 
+  // assert
   expect(spy1).toHaveBeenCalledTimes(1);
-  expect(spy1).toHaveBeenCalledWith('hello');
+  expect(spy1).toHaveBeenCalledWith(randomArg);
 });
 
 test('it should select the first fn by default when an array is passed as input', () => {
-  const spy1 = 'blah';
-  const spy2 = jest.fn();
+  // arrange
+  const spy = jest.fn();
+  const randomArg = argList[rndm()];
 
-  rp([spy1, spy2], 'hello');
+  // act
+  rp(['not a function', spy], randomArg);
 
-  expect(spy2).toHaveBeenCalledTimes(1);
-  expect(spy2).toHaveBeenCalledWith('hello');
+  // assert
+  expect(spy).toHaveBeenCalledTimes(1);
+  expect(spy).toHaveBeenCalledWith(randomArg);
 });
 
 test('it should pass the correct arguments', () => {
   const spy = jest.fn();
-  const arg1 = 'hello';
-  const arg2 = 20;
-  const arg3 = ['hello', 'goodbye'];
-  const arg4 = { id: 1, desc: 'fun' };
 
-  rp(spy, arg1);
-  expect(spy).toHaveBeenCalledWith(arg1);
+  // string props
+  rp(spy, argList[0]);
+  expect(spy).toHaveBeenCalledWith(argList[0]);
 
-  rp(spy, arg2);
-  expect(spy).toHaveBeenCalledWith(arg2);
+  // number props
+  rp(spy, argList[1]);
+  expect(spy).toHaveBeenCalledWith(argList[1]);
 
-  rp(spy, arg3);
-  expect(spy).toBeCalledWith(arg3);
+  // array props
+  rp(spy, argList[2]);
+  expect(spy).toBeCalledWith(argList[2]);
 
-  rp(spy, arg4);
-  expect(spy).toBeCalledWith(arg4);
+  // object props
+  rp(spy, argList[3]);
+  expect(spy).toBeCalledWith(argList[3]);
 
-  rp(spy, noop);
-  expect(spy).toBeCalledWith(noop);
+  // function props
+  rp(spy, argList[4]);
+  expect(spy).toBeCalledWith(argList[4]);
 });
 
 test('it should throw an error by default when no function is passed', () => {
-  const spy1 = 'string';
-  const spy2 = 2;
+  // arrange
+  const rndmArg = argList[rndm()];
+  const wrapper = () => rp(['string', 2], rndmArg);
 
-  function wrapper() {
-    rp([spy1, spy2], 'blahblahblah');
-  }
-
+  // assert
   expect(wrapper).toThrow();
   expect(wrapper).toThrow(TypeError);
   expect(wrapper).toThrow(/^none of the supported render props are functions$/);
 });
 
 test('the third argument should be overrideable with your own function/component', () => {
-  const spy = 'string';
-  const actualSpy = jest.fn();
+  // arrange
+  const err = 'err';
+  const wrapper = () => rp('not a function', 'blah', handleError(err));
 
-  function handleError() {
-    throw new Error('this is an error');
-  }
-
-  function wrapper() {
-    rp(spy, 'blah', handleError);
-  }
   expect(wrapper).toThrow();
-  expect(wrapper).toThrow(/^this is an error$/);
+  expect(wrapper).toThrow(err);
+});
+
+test('it should fail if first argument is passed in as undefined', () => {
+  const wrapper = () => rp(undefined, 'hello');
+  expect(wrapper).toThrow();
+  expect(wrapper).toThrow(
+    /^none of the supported render props are functions$/i,
+  );
 });
