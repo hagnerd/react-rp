@@ -2,12 +2,30 @@ const rp = require('./main');
 
 const noop = () => {};
 
+// TODO: refactor / cleanup tests
+
 test('it should work with a single function as input', () => {
   const spy = jest.fn();
   rp(spy, 'hello');
 
   expect(spy).toHaveBeenCalledTimes(1);
   expect(spy).toHaveBeenCalledWith('hello');
+});
+
+test('it should fail if the only render prop is not a function', () => {
+  const spy = 'fail';
+
+  function handleError() {
+    throw new Error('test error');
+  }
+
+  expect(() => {
+    rp(spy, 'ha');
+  }).toThrow();
+
+  expect(() => {
+    rp(spy, 'ha', handleError);
+  }).toThrow(/^test error$/);
 });
 
 test('it should work with an array of functions as input', () => {
@@ -51,4 +69,32 @@ test('it should pass the correct arguments', () => {
 
   rp(spy, noop);
   expect(spy).toBeCalledWith(noop);
+});
+
+test('it should throw an error by default when no function is passed', () => {
+  const spy1 = 'string';
+  const spy2 = 2;
+
+  function wrapper() {
+    rp([spy1, spy2], 'blahblahblah');
+  }
+
+  expect(wrapper).toThrow();
+  expect(wrapper).toThrow(TypeError);
+  expect(wrapper).toThrow(/^none of the supported render props are functions$/);
+});
+
+test('the third argument should be overrideable with your own function/component', () => {
+  const spy = 'string';
+  const actualSpy = jest.fn();
+
+  function handleError() {
+    throw new Error('this is an error');
+  }
+
+  function wrapper() {
+    rp(spy, 'blah', handleError);
+  }
+  expect(wrapper).toThrow();
+  expect(wrapper).toThrow(/^this is an error$/);
 });
