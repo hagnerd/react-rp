@@ -6,7 +6,7 @@ export default {
       format: 'cjs',
     },
     {
-      file: 'dist/bundle.es.js',
+      file: 'dist/bundle.esm.js',
       format: 'esm',
     }
   ]
