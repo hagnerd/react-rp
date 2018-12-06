@@ -1,6 +1,12 @@
+⚠️T*THE API IS VERY LIKELY TO CHANGE, AND BREAK*
+
+I'm still in the exploratory-phase of how I want the API to work, so I will be making frequent breaking changes. 
+
 ## What is react-rp?
 
-A single function that makes the logic around supporting multiple props for rendering in React easier. This is based on a utility that I end up writing in pretty much every react project I create (in a utils file/folder). I decided to finally publish it to NPM and put it up on Github because of a stream that Kent C Dodds did about refactoring a Render Props component to use a Custom Hook with the Render Props pattern.
+At its core, `react-rp` is a single function with smart defaults, and a flexible api, to help you write your render props. What's great is that it is small, so small in fact that you can just copy it into your project instead of running `npm install @hagnerd/react-rp`. But you can always install it if you'd like 😉.
+
+`react-rp` is based on a utility that I end up writing in pretty much every react project I create (in a utils file/folder). I decided to finally publish it to NPM and put it up on Github because of a stream that Kent C Dodds did about refactoring a Render Props component to use a Custom Hook with the Render Props pattern.
 
 I realized that even though it is a small function, and fairly easy to wrap your head around, it is also flexible and therefore may be usable by people other than myself.
 
